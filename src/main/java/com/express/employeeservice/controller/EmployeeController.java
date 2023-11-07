@@ -1,6 +1,5 @@
 package com.express.employeeservice.controller;
 
-import com.express.employeeservice.entity.Employee;
 import com.express.employeeservice.model.response.CommonResponse;
 import com.express.employeeservice.model.response.EmployeeResponse;
 import com.express.employeeservice.service.EmployeeService;
