@@ -19,7 +19,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class AddressServiceImpl implements AddressService {
     private final AddressRepository addressRepository;
-//    private final ModelMapper modelMapper;
+    private final ModelMapper modelMapper;
     @Override
     public AddressResponse getAddressById(Integer addressId) {
         Address address = addressRepository.findById(addressId)
@@ -36,9 +36,9 @@ public class AddressServiceImpl implements AddressService {
         Address address = addressRepository.findAddressByEmployeeId(employeeId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "address with employee id " + employeeId + " is not found"));
 
-//        return modelMapper.map(address, AddressResponse.class);
-        AddressResponse response = new AddressResponse();
-        BeanUtils.copyProperties(address, response);
-        return response;
+        return modelMapper.map(address, AddressResponse.class);
+//        AddressResponse response = new AddressResponse();
+//        BeanUtils.copyProperties(address, response);
+//        return response;
     }
 }

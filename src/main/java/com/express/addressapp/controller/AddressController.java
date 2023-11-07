@@ -16,27 +16,16 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/addresses")
 public class AddressController {
     private final AddressService addressService;
-    
-    @GetMapping("/{addressId}")
-    public ResponseEntity<?> getAddressById(@PathVariable("addressId") Integer addressId) {
-        AddressResponse address = addressService.getAddressById(addressId);
-        CommonResponse<?> response = CommonResponse.builder()
-                .data(address)
-                .statusCode(HttpStatus.OK.value())
-                .build();
 
-        return ResponseEntity.ok(response);
-    }
-
-    @GetMapping("/{employeeId}/employee")
+    @GetMapping("/{employeeId}")
     public ResponseEntity<?> getAddressByEmployeeId(@PathVariable("employeeId") Integer employeeId) {
         AddressResponse address = addressService.getAddressByEmployeeId(employeeId);
-        CommonResponse<?> response = CommonResponse.builder()
-                .data(address)
-                .statusCode(HttpStatus.OK.value())
-                .build();
+//        CommonResponse<?> response = CommonResponse.builder()
+//                .data(address)
+//                .statusCode(HttpStatus.OK.value())
+//                .build();
 
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(address);
     }
 
 }
