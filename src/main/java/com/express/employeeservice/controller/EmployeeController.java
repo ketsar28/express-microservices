@@ -19,9 +19,9 @@ public class EmployeeController {
 
     private final EmployeeService employeeService;
 
-    @GetMapping("/{id}")
-    public ResponseEntity<?> getEmployeeById(@PathVariable("id") Integer id) {
-        EmployeeResponse employee = employeeService.getEmployeeById(id);
+    @GetMapping("/{employeeId}")
+    public ResponseEntity<?> getEmployeeById(@PathVariable("employeeId") Integer employeeId) {
+        EmployeeResponse employee = employeeService.getEmployeeById(employeeId);
         CommonResponse<?> response = CommonResponse.builder()
                 .data(employee)
                 .statusCode(HttpStatus.OK.value())

@@ -19,12 +19,12 @@ public class EmployeeServiceImpl implements EmployeeService {
     private final ModelMapper modelMapper;
 
     @Override
-    public EmployeeResponse getEmployeeById(Integer id){
-       Optional<Employee> employee = employeeRepository.findById(id);
+    public EmployeeResponse getEmployeeById(Integer employeeId){
+       Optional<Employee> employee = employeeRepository.findById(employeeId);
        if(employee.isPresent()) {
            return modelMapper.map(employee, EmployeeResponse.class);
        } else {
-           throw new ResponseStatusException(HttpStatus.NOT_FOUND, "employee with id " + id + " is not found");
+           throw new ResponseStatusException(HttpStatus.NOT_FOUND, "employee with id " + employeeId + " is not found");
        }
     }
 }
