@@ -13,7 +13,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -35,10 +37,19 @@ public class AddressServiceImpl implements AddressService {
     public AddressResponse getAddressByEmployeeId(Integer employeeId) {
         Address address = addressRepository.findAddressByEmployeeId(employeeId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "address with employee id " + employeeId + " is not found"));
-
+        System.out.println("request for get address with employe id : " + employeeId);
         return modelMapper.map(address, AddressResponse.class);
 //        AddressResponse response = new AddressResponse();
 //        BeanUtils.copyProperties(address, response);
 //        return response;
+    }
+
+    @Override
+    public List<AddressResponse> getAllAddress() {
+        List<Address> addresses = addressRepository.findAll();
+        System.out.println("request for get all address");
+        return addresses.stream()
+                .map(address -> modelMapper.map(address, AddressResponse.class))
+                .collect(Collectors.toList());
     }
 }

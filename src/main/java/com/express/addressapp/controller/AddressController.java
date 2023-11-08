@@ -1,15 +1,14 @@
 package com.express.addressapp.controller;
 
 import com.express.addressapp.model.response.AddressResponse;
-import com.express.addressapp.model.response.CommonResponse;
 import com.express.addressapp.service.AddressService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -20,11 +19,12 @@ public class AddressController {
     @GetMapping("/{employeeId}")
     public ResponseEntity<?> getAddressByEmployeeId(@PathVariable("employeeId") Integer employeeId) {
         AddressResponse address = addressService.getAddressByEmployeeId(employeeId);
-//        CommonResponse<?> response = CommonResponse.builder()
-//                .data(address)
-//                .statusCode(HttpStatus.OK.value())
-//                .build();
+        return ResponseEntity.ok(address);
+    }
 
+    @GetMapping
+    public ResponseEntity<?> getAllAddress() {
+        List<AddressResponse> address = addressService.getAllAddress();
         return ResponseEntity.ok(address);
     }
 
