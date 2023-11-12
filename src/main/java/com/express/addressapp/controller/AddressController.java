@@ -24,8 +24,8 @@ public class AddressController {
 
     @GetMapping
     public ResponseEntity<?> getAllAddress() {
-        List<AddressResponse> address = addressService.getAllAddress();
-        return ResponseEntity.ok(address);
+        List<AddressResponse> addresses = addressService.getAllAddress();
+        return ResponseEntity.ok(addresses);
     }
 
 }
