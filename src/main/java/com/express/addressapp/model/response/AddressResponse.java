@@ -1,5 +1,7 @@
 package com.express.addressapp.model.response;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 
 @Setter
@@ -8,9 +10,10 @@ import lombok.*;
 @AllArgsConstructor
 @Builder(toBuilder = true)
 public class AddressResponse {
-    private Integer id;
+    private String id;
     private String lane1;
     private String lane2;
     private String state;
     private String zip;
+    private String employeeId;
 }

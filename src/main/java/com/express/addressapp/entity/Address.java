@@ -14,9 +14,11 @@ import org.hibernate.annotations.GenericGenerator;
 @Builder(toBuilder = true)
 @Table(name = "m_address")
 public class Address {
+
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    @GenericGenerator(strategy = "uuid2", name="system-uuid")
+    @GeneratedValue(generator = "system-uuid")
+    private String id;
 
     @Column(name = "lane_1")
     private String lane1;
@@ -29,4 +31,7 @@ public class Address {
 
     @Column(name = "zip", unique = true)
     private String zip;
+
+    @Column(name = "employee_id")
+    private String employeeId;
 }
