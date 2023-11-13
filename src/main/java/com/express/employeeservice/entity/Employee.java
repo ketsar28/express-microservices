@@ -1,6 +1,7 @@
 package com.express.employeeservice.entity;
 
 import lombok.*;
+import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 
@@ -13,9 +14,10 @@ import javax.persistence.*;
 @Table(name = "m_employee")
 public class Employee {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+   @Id
+   @GenericGenerator(strategy = "uuid2", name="system-uuid")
+   @GeneratedValue(generator = "system-uuid")
+   private String id;
 
     @Column(name = "name")
     private String name;

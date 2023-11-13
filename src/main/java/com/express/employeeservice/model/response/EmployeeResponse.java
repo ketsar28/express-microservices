@@ -1,6 +1,9 @@
 package com.express.employeeservice.model.response;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
+import java.util.*;
 
 @Setter
 @Getter
@@ -8,9 +11,15 @@ import lombok.*;
 @AllArgsConstructor
 @Builder(toBuilder = true)
 public class EmployeeResponse {
-    private Integer id;
+    private String id;
     private String name;
     private String email;
     private String bloodGroup;
-    private AddressResponse addressResponse;
+    private List<AddressResponse> addressResponse;
+
+    @JsonProperty("addressResponse")
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    public List<AddressResponse> getAddressResponse() {
+        return addressResponse;
+    }
 }
