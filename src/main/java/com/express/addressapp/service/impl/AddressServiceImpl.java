@@ -115,7 +115,7 @@ public class AddressServiceImpl implements AddressService {
     @SneakyThrows // dont use this annotation in production mode
     public List<AddressResponse> getAllAddress() {
         log.info("wait started");
-        Thread.sleep(10000);
+        Thread.sleep(7000);
         log.info("wait ended");
         List<Address> addresses = addressRepository.findAll();
         System.out.println("request for get all address");
