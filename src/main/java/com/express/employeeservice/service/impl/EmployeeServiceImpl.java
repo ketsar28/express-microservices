@@ -2,8 +2,8 @@ package com.express.employeeservice.service.impl;
 
 import com.express.employeeservice.entity.Employee;
 import com.express.employeeservice.model.request.EmployeeRequest;
-import com.express.employeeservice.model.request.UpdateEmployeeRequest;
 import com.express.employeeservice.model.request.UpdateAddressByEmployeeRequest;
+import com.express.employeeservice.model.request.UpdateEmployeeRequest;
 import com.express.employeeservice.model.response.AddressResponse;
 import com.express.employeeservice.model.response.EmployeeResponse;
 import com.express.employeeservice.openfeignclients.AddressClient;
@@ -12,12 +12,16 @@ import com.express.employeeservice.service.EmployeeService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
+import org.springframework.cloud.sleuth.Span;
+import org.springframework.cloud.sleuth.Tracer;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.lang.reflect.Array;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -27,6 +31,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     private final EmployeeRepository employeeRepository;
     private final ModelMapper modelMapper;
     private final AddressClient addressClient;
+    private final Tracer tracer;
 
     @Override
     public EmployeeResponse createNewEmployee(EmployeeRequest employeeRequest) {
@@ -90,7 +95,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     public void deleteEmployeeById(String employeeId) {
         List<AddressResponse> addressResponse = addressClient.getAddressByEmployeeId(employeeId).getBody();
 
-        if(addressResponse.isEmpty()) {
+        if (addressResponse.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "address not found");
         }
 
@@ -106,20 +111,25 @@ public class EmployeeServiceImpl implements EmployeeService {
     public List<EmployeeResponse> getAllEmployees() {
         List<Employee> employees = employeeRepository.findAll();
 
-        List<EmployeeResponse> employeeResponses = Arrays.asList(modelMapper.map(employees, EmployeeResponse[].class));
+        Span traceAddress = tracer.nextSpan().name("addressServiceInEmployeeServiceImpl");
 
-        employeeResponses.forEach(employeeResponse -> {
-            List<AddressResponse> addressList = new ArrayList<>();
-            for (AddressResponse addressResponse : addressClient.getAllAddress().getBody()) {
-                if (addressResponse.getEmployeeId().equals(employeeResponse.getId())) {
-                    addressList.add(addressResponse);
+        try (Tracer.SpanInScope spanInScope = tracer.withSpan(traceAddress.start())) {
+        List<EmployeeResponse> employeeResponses = Arrays.asList(modelMapper.map(employees, EmployeeResponse[].class));
+            employeeResponses.forEach(employeeResponse -> {
+                List<AddressResponse> addressList = new ArrayList<>();
+                for (AddressResponse addressResponse : addressClient.getAllAddress().getBody()) {
+                    if (addressResponse.getEmployeeId().equals(employeeResponse.getId())) {
+                        addressList.add(addressResponse);
+                    }
+
+                    employeeResponse.setAddressResponse(addressList);
                 }
 
-                employeeResponse.setAddressResponse(addressList);
-            }
-
-        });
-        return employeeResponses;
+            });
+            return employeeResponses;
+        } finally {
+            traceAddress.end();
+        }
     }
 
 
@@ -132,8 +142,6 @@ public class EmployeeServiceImpl implements EmployeeService {
         List<AddressResponse> addressResponse = addressClient.getAddressByEmployeeId(employeeId).getBody();
 
         employeeResponse.setAddressResponse(addressResponse);
-
-
         return employeeResponse;
     }
 }
