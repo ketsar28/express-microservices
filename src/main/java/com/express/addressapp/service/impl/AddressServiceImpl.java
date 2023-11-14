@@ -8,6 +8,8 @@ import com.express.addressapp.model.response.AddressResponse;
 import com.express.addressapp.repository.AddressRepository;
 import com.express.addressapp.service.AddressService;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.BeanUtils;
 import org.springframework.http.HttpStatus;
@@ -22,6 +24,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class AddressServiceImpl implements AddressService {
     private final AddressRepository addressRepository;
     private final ModelMapper modelMapper;
@@ -109,7 +112,11 @@ public class AddressServiceImpl implements AddressService {
     }
 
     @Override
+    @SneakyThrows // dont use this annotation in production mode
     public List<AddressResponse> getAllAddress() {
+        log.info("wait started");
+        Thread.sleep(10000);
+        log.info("wait ended");
         List<Address> addresses = addressRepository.findAll();
         System.out.println("request for get all address");
         List<AddressResponse> addressResponses = Arrays.asList(modelMapper.map(addresses, AddressResponse[].class));
