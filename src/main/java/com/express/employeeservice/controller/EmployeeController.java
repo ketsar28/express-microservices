@@ -6,12 +6,16 @@ import com.express.employeeservice.model.request.UpdateAddressByEmployeeRequest;
 import com.express.employeeservice.model.response.CommonResponse;
 import com.express.employeeservice.model.response.EmployeeResponse;
 import com.express.employeeservice.service.EmployeeService;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+import io.github.resilience4j.retry.annotation.Retry;
+import io.github.resilience4j.timelimiter.annotation.TimeLimiter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 @RestController
 @RequiredArgsConstructor
@@ -31,13 +35,26 @@ public class EmployeeController {
     }
 
     @GetMapping
-    public ResponseEntity<?> getAllEmployees() {
+    @CircuitBreaker(name = "address-service", fallbackMethod = "fallbackMethodGetAll")
+    // timelimiter (asynchronous calls)
+    @TimeLimiter(name = "address-service", fallbackMethod = "fallbackMethodGetAll")
+    @Retry(name = "address-service")
+    public CompletableFuture<ResponseEntity<?>>  getAllEmployees() {
        List<EmployeeResponse> employeeResponses = employeeService.getAllEmployees();
        CommonResponse<?> response = CommonResponse.builder()
                .data(employeeResponses)
                .build();
+       // timelimiter (asynchronous calls)
+       return CompletableFuture.supplyAsync(() -> ResponseEntity.ok(response));
+    }
 
-       return ResponseEntity.ok(response);
+    // temporary method when external microservice till down
+    public CompletableFuture<ResponseEntity<?>> fallbackMethodGetAll(RuntimeException runtimeException) {
+        CommonResponse<?> errorsResponse = CommonResponse.builder()
+                .data(runtimeException.getMessage())
+                .build();
+        // timelimiter (asynchronous calls)
+        return CompletableFuture.supplyAsync(() -> ResponseEntity.badRequest().body(errorsResponse));
     }
 
 
